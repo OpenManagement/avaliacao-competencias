@@ -8,9 +8,17 @@ from email.mime.base import MIMEBase
 from email import encoders
 import pdfkit
 import os
+import mercadopago
 from tabela_referencia_competencias import COMPETENCIAS_ACOES
 
 app = Flask(__name__)
+
+# Configuração do Mercado Pago via variáveis de ambiente
+mp = mercadopago.SDK(os.getenv("MP_ACCESS_TOKEN"))
+PUBLIC_KEY = os.getenv("MP_PUBLIC_KEY")
+CLIENT_ID = os.getenv("MP_CLIENT_ID")
+CLIENT_SECRET = os.getenv("MP_CLIENT_SECRET")
+
 
 # Configuração de logging
 logging.basicConfig(
@@ -272,11 +280,11 @@ def enviar_email(nome, email_destino, pdf_path, pontuacao_geral):
     """Envia email com relatório em anexo usando configurações SMTP Zoho"""
     try:
         # Configurações do SMTP Zoho Mail - Exatamente conforme especificado
-        smtp_server = "smtppro.zoho.com"
-        smtp_port = 465  # SSL
-        email_usuario = "consultoria@openmanagement.com.br"
-        email_senha = "Dril2001*#2001*#"  # Senha do app Zoho Mail corrigida
-        email_interno = "consultoria@openmanagement.com.br"
+        smtp_server = os.getenv("MAIL_SERVER")
+        smtp_port = int(os.getenv("MAIL_PORT", 465))  # Default: 465
+        email_usuario = os.getenv("MAIL_USERNAME")
+        email_senha = os.getenv("MAIL_PASSWORD")
+        email_interno = os.getenv("MAIL_USERNAME")
         
         # Verificar se o arquivo PDF existe antes de prosseguir
         if not pdf_path or not os.path.exists(pdf_path):
